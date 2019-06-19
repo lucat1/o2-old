@@ -3,14 +3,17 @@ package git
 import (
 	"compress/gzip"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/shared"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lucat1/git/routes"
+	"github.com/lucat1/git/shared"
+	"go.uber.org/zap"
 )
 
 func ServiceRPC(c *gin.Context) {
@@ -29,7 +32,7 @@ func ServiceRPC(c *gin.Context) {
 		return
 	}
 
-	c.Header("Content-Type", "application/x-git-" + rpc + "-result")
+	c.Header("Content-Type", "application/x-git-"+rpc+"-result")
 	c.Header("Connection", "Keep-Alive")
 	c.Header("Transfer-Encoding", "chunked")
 	c.Header("X-Content-Type-Options", "nosniff")
@@ -38,29 +41,50 @@ func ServiceRPC(c *gin.Context) {
 	var env []string
 	// TODO: config
 	/*
-	if config.DefaultEnv != "" {
-		env = append(env, config.DefaultEnv)
-	}*/
+		if config.DefaultEnv != "" {
+			env = append(env, config.DefaultEnv)
+		}*/
 
-	// TODO: config
-	/*
-	user, password, authok := c.Request.BasicAuth()
-	fmt.Println(authok)
-	if authok {
+	// usr, passwd
+	authHead := c.GetHeader("Authorization")
+	if len(authHead) == 0 {
+		c.Header("WWW-Authenticate", "Basic realm=\".\"")
+		c.Status(http.StatusUnauthorized)
+		return
+	}
 
-		if config.AuthUserEnvVar != "" {
-			env = append(env, fmt.Sprintf("%s=%s", config.AuthUserEnvVar, user))
-		}
-		if config.AuthPassEnvVar != "" {
-			env = append(env, fmt.Sprintf("%s=%s", config.AuthPassEnvVar, password))
-		}
-	}*/
+	username, password, ok := c.Request.BasicAuth()
+	if !ok {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	shared.GetLogger().Info(
+		"New login",
+		zap.String("username", username),
+		zap.String("password", password),
+	)
+
+	user := routes.FindUser(username)
+	if user == nil {
+		// User with the provided username doesnt exist
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+	// If the user exists lets check for the password
+	ok = shared.CheckPassword(user.Password, password)
+	if !ok {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+
+	shared.GetLogger().Info("Git '"+rpc+"' rpc with authenticated user", zap.String("user", user.Username))
 
 	args := []string{rpc, "--stateless-rpc", dir}
 	cmd := exec.Command("/usr/bin/git", args...)
 	version := c.GetHeader("Git-Protocol")
 	if len(version) != 0 {
-		cmd.Env = append(os.Environ(), "GIT_PROTOCOL=" + version)
+		cmd.Env = append(os.Environ(), "GIT_PROTOCOL="+version)
 	}
 	cmd.Dir = dir
 	cmd.Env = env

@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 			zap.String("password", password),
 		)
 
-		user := findUser(username)
+		user := FindUser(username)
 		if user == nil {
 			c.HTML(500, "login.tmpl", gin.H{
 				"error":   true,

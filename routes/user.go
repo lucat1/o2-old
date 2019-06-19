@@ -7,7 +7,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func findUser(username string) *shared.User {
+// FindUser searches the database for a user account
+func FindUser(username string) *shared.User {
 	var user shared.User
 	err := shared.GetDatabase().Find(&user, &shared.User{Username: username}).Error
 	if err != nil {
@@ -28,14 +29,14 @@ func findUser(username string) *shared.User {
 // /:user
 func User(c *gin.Context) {
 	username := c.Param("user")
-	user := findUser(username)
+	user := FindUser(username)
 	if user == nil {
 		NotFound(c)
 		return
 	}
 
 	var repos []*shared.Repository
-	if err := shared.GetDatabase().Find(&repos, &shared.Repository{ Owner: user.Username }).Error; err != nil && !gorm.IsRecordNotFoundError(err) {
+	if err := shared.GetDatabase().Find(&repos, &shared.Repository{Owner: user.Username}).Error; err != nil && !gorm.IsRecordNotFoundError(err) {
 		shared.GetLogger().Error(
 			"Unkown error while listing user's repositories",
 			zap.String("username", user.Username),
