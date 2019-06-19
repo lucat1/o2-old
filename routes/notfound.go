@@ -3,7 +3,6 @@ package routes
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"runtime/debug"
 )
 
 // NotFound is the 404 route
