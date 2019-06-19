@@ -1,13 +1,14 @@
 package main
 
 import (
+	"runtime"
+
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/git/routes"
 	"github.com/lucat1/git/routes/git"
 	"github.com/lucat1/git/shared"
 	"go.uber.org/zap"
-	"runtime"
 )
 
 func main() {
@@ -33,12 +34,12 @@ func main() {
 	router.GET("/", routes.Index)
 	router.POST("/:user", routes.Logout, routes.Login, routes.Register, routes.Create)
 	router.GET("/:user", routes.Logout, routes.Login, routes.Register, routes.Create, routes.User)
-	router.GET("/:user/:repo", routes.Repo)
-	router.GET("/:user/:repo/tree", routes.Tree)
-	router.GET("/:user/:repo/tree/:ref", routes.Tree)
-	router.GET("/:user/:repo/tree/:ref/*path", routes.Tree)
-	router.GET("/:user/:repo/blob/:ref/*path", routes.Blob)
-	router.GET("/:user/:repo/log", routes.Log)
+	router.GET("/:user/:repo", routes.ExistsRepo(true), routes.Repo)
+	router.GET("/:user/:repo/tree", routes.ExistsRepo(true), routes.Tree)
+	router.GET("/:user/:repo/tree/:ref", routes.ExistsRepo(true), routes.Tree)
+	router.GET("/:user/:repo/tree/:ref/*path", routes.ExistsRepo(true), routes.Tree)
+	router.GET("/:user/:repo/blob/:ref/*path", routes.ExistsRepo(true), routes.Blob)
+	router.GET("/:user/:repo/log", routes.ExistsRepo(true), routes.Log)
 
 	// Git smart http protocol
 	router.GET("/:user/:repo/info/refs", routes.ExistsRepo(false), git.GetInfoRefs)

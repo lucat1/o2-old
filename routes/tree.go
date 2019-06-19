@@ -2,13 +2,12 @@ package routes
 
 import (
 	"bytes"
-	"github.com/lucat1/git/shared"
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path"
 	"strings"
+
+	"github.com/lucat1/git/shared"
 
 	"code.gitea.io/git"
 	"github.com/alecthomas/chroma/formatters/html"
@@ -18,26 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
-
-func getRepositoryPath(user, repo string) string {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	return path.Join(wd, "repos", user, repo+".git")
-}
-
-func getRepository(c *gin.Context, user, repo string) *git.Repository {
-	path := getRepositoryPath(user, repo)
-
-	r, err := git.OpenRepository(path)
-	if err != nil {
-		NotFound(c)
-	}
-
-	return r
-}
 
 func getCommit(c *gin.Context, repo *git.Repository, branch string) *git.Commit {
 	var (
@@ -85,25 +64,27 @@ func buildEntry(entry *git.TreeEntry) []interface{} {
 // /:user/:repo/tree
 func Tree(c *gin.Context) {
 	username := c.Param("user")
-	reponame := c.Param("repo")
 	ref := c.Param("ref")
-
 	path := c.Param("path")
 	if path == "" {
 		path = "/"
 	}
 
-	dbRepo, repo := findRepo(c, username, reponame)
-	if repo == nil {
+	_Irepo, Irepo := c.Keys["_repo"], c.Keys["repo"]
+	if Irepo == nil || _Irepo == nil {
+		NotFound(c)
 		return
 	}
+
+	dbRepo := _Irepo.(*shared.Repository)
+	repo := Irepo.(*git.Repository)
 
 	if ref == "" {
 		ref = dbRepo.MainBranch
 	}
 
 	commit := getCommit(c, repo, ref)
-	if(commit == nil) {
+	if commit == nil {
 		NotFound(c)
 		return
 	}
@@ -129,11 +110,11 @@ func Tree(c *gin.Context) {
 	// Paths for the separator
 	var parents [][]string
 	prev := ""
-	_parents := strings.Split(path, "/");
+	_parents := strings.Split(path, "/")
 	for _, path := range _parents {
 		p := path
 		if path == "" {
-			p = reponame
+			p = dbRepo.Name
 		} else {
 			prev += "/" + path
 		}
@@ -150,11 +131,11 @@ func Tree(c *gin.Context) {
 		c.HTML(http.StatusOK, "tree.tmpl", gin.H{
 			"username":     username,
 			"user":         c.Keys["user"],
-			"repo":         reponame,
+			"repo":         dbRepo.Name,
 			"ref":          ref,
 			"path":         path,
-			"parents":		  parents,
-			"parentsl":     len(parents)-1,
+			"parents":      parents,
+			"parentsl":     len(parents) - 1,
 			"selectedtree": true,
 			"directory":    true,
 			"notRoot":      !(path == "/"),
@@ -203,11 +184,11 @@ func Tree(c *gin.Context) {
 		c.HTML(http.StatusOK, "tree.tmpl", &gin.H{
 			"username":     username,
 			"user":         c.Keys["user"],
-			"repo":         reponame,
+			"repo":         dbRepo.Name,
 			"ref":          ref,
 			"path":         path,
-			"parents":		  parents,
-			"parentsl":     len(parents)-1,
+			"parents":      parents,
+			"parentsl":     len(parents) - 1,
 			"selectedtree": true,
 			"directory":    false,
 			"contents":     contents,

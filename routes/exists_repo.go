@@ -2,10 +2,13 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
+// ExistsRepo is a helper used to determine if a
+// repository exists, otherwhise redirecting to 404
 func ExistsRepo(withDatabase bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		username := c.Param("user")
@@ -16,12 +19,13 @@ func ExistsRepo(withDatabase bool) gin.HandlerFunc {
 		}
 
 		if withDatabase {
-			_, repo := findRepo(c, username, reponame)
+			_repo, repo := findRepo(c, username, reponame)
 			if repo == nil {
 				NotFound(c)
 				return
 			}
 
+			c.Keys["_repo"] = _repo
 			c.Keys["repo"] = repo
 			c.Next()
 		} else {

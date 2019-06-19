@@ -7,6 +7,8 @@ import (
 	"github.com/lucat1/git/shared"
 )
 
+// Create is the /create route, to create repos
+// /create
 func Create(c *gin.Context) {
 	// Create tough has to first check out we're not
 	// in a user path like /luca but we are in fact in /create
@@ -33,15 +35,15 @@ func Create(c *gin.Context) {
 		name := c.PostForm("name")
 
 		var oldRepo shared.Repository
-		err :=shared.GetDatabase().Find(&oldRepo, &shared.Repository{ Owner: user.Username, Name: name }).Error
+		err := shared.GetDatabase().Find(&oldRepo, &shared.Repository{Owner: user.Username, Name: name}).Error
 		if !gorm.IsRecordNotFoundError(err) {
 			failWithError(c, "You already own a repository with this name")
 			return
 		}
 		// All good to go
 		repo := &shared.Repository{
-			Owner: user.Username,
-			Name: name,
+			Owner:      user.Username,
+			Name:       name,
 			MainBranch: "master", // TODO: Form parameter
 		}
 		err = shared.GetDatabase().Save(repo).Error
@@ -56,13 +58,13 @@ func Create(c *gin.Context) {
 			return
 		}
 
-		c.Redirect(301, "/" + user.Username + "/" + name)
+		c.Redirect(301, "/"+user.Username+"/"+name)
 	}
 }
 
 func failWithError(c *gin.Context, err string) {
 	c.HTML(200, "create.tmpl", gin.H{
-		"user": c.Keys["user"],
+		"user":  c.Keys["user"],
 		"error": err,
 	})
 	c.Abort()

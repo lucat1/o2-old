@@ -6,11 +6,12 @@ import (
 
 	"code.gitea.io/git"
 	"github.com/gin-gonic/gin"
+	"github.com/lucat1/git/shared"
 )
 
 type renderCommit struct {
-	ID string
-	Name string
+	ID          string
+	Name        string
 	Description string
 }
 
@@ -18,15 +19,11 @@ type renderCommit struct {
 // /:user/:repo/log
 func Log(c *gin.Context) {
 	user := c.Param("user")
-	_repo := c.Param("repo")
 
-	dbRepo, repo := findRepo(c, user, _repo)
-	if repo == nil {
-		return
-	}
+	dbRepo, repo := c.Keys["_repo"].(*shared.Repository), c.Keys["repo"].(*git.Repository)
 
 	commit := getCommit(c, repo, dbRepo.MainBranch)
-	if(commit == nil) {
+	if commit == nil {
 		NotFound(c)
 		return
 	}
@@ -40,15 +37,15 @@ func Log(c *gin.Context) {
 	for e := _commits.Front(); e != nil; e = e.Next() {
 		commit := e.Value.(*git.Commit)
 		commits = append(commits, &renderCommit{
-			ID: commit.ID.String(),
+			ID:          commit.ID.String(),
 			Description: commit.Summary(),
-			Name: commit.CommitMessage,
+			Name:        commit.CommitMessage,
 		})
 	}
 
 	c.HTML(http.StatusOK, "log.tmpl", gin.H{
 		"username":    user,
-		"repo":        _repo,
+		"repo":        dbRepo.Name,
 		"selectedlog": true,
 		"commits":     commits,
 		"user":        c.Keys["user"],
