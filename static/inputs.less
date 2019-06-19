@@ -1,0 +1,16 @@
+@import "vars";
+
+input[type="text"], input[type="password"] {
+  border: 1px solid darken(@background-darker, 10);
+  background: @background;
+  padding: @padding/3 @padding/3;
+  width: 100%;
+  max-width: @padding * 20;
+  font-size: @fontsize/1.2;
+}
+
+input[type="text"]:active, input[type="text"]:focus,
+input[type="password"]:active, input[type="password"]:focus {
+  outline: 0;
+  border: 1px solid @secondary-color;
+}

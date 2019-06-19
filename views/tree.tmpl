@@ -19,14 +19,14 @@
   {{if .directory}}
     <div class="tree">
       {{range $val := .files}}
-        <div>{{index $val 0}}</div>
+        <div class="mod">{{index $val 0}}</div>
         <div>
           <a
             {{if index $val 2}}class="dir"{{end}}
             href="/{{$.username}}/{{$.repo}}/tree/{{$.ref}}{{$.path}}{{if and $.directory $.notRoot}}/{{end}}{{index $val 1}}"
           >{{index $val 1}}</a>
         </div>
-        <div>commit message</div>
+        <div class="msg">commit message</div>
         <div style="text-align: right">{{index $val 3}}</div>
       {{end}}
     </div>

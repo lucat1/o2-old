@@ -3,12 +3,21 @@ div.settings {
   width: 100%;
   display: flex;
 
+  @media (min-width: 320px) and (max-width: 480px) {
+    margin: @padding;
+    flex-direction: column;
+  }
+
   div.right {
     margin-right: @padding * 3;
 
     ul {
       padding: 0;
       list-style: none;
+    }
+
+    @media (min-width: 320px) and (max-width: 480px) {
+      margin-right: 0;
     }
   }
 
@@ -27,6 +36,15 @@ div.settings {
 
     h2 {
       padding: @padding/2 0;
+    }
+
+    @media (min-width: 320px) and (max-width: 480px) {
+      border: none;
+      padding-left: 0;
+
+      div input {
+        width: calc(100% - @padding);
+      }
     }
   }
 }

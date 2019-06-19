@@ -3,11 +3,22 @@
 @import "navbars";
 @import "texts";
 @import "views";
+@import "buttons";
+@import "inputs";
+@import "login";
+
+html { background: @background; }
 
 body {
   margin: 0;
   font-family: @fontfamily;
   font-size: @fontsize;
-  background: @background;
   color: @text-color;
+
+  display: flex;
+  flex-direction: column;
+}
+
+*::selection {
+  background: lighten(@primary-color, 50);
 }
