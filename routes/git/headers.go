@@ -2,9 +2,11 @@ package git
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
+
 func hdrNocache(c *gin.Context) {
 	c.Header("Expires", "Fri, 01 Jan 1980 00:00:00 GMT")
 	c.Header("Pragma", "no-cache")

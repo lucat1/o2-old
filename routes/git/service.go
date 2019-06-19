@@ -7,17 +7,17 @@ import (
 )
 
 func getServiceType(r *http.Request) string {
-	service_type := r.FormValue("service")
+	serviceType := r.FormValue("service")
 
-	if s := strings.HasPrefix(service_type, "git-"); !s {
+	if s := strings.HasPrefix(serviceType, "git-"); !s {
 		return ""
 	}
 
-	return strings.Replace(service_type, "git-", "", 1)
+	return strings.Replace(serviceType, "git-", "", 1)
 }
 
-func hasAccess(r *http.Request, dir string, rpc string, check_content_type bool) bool {
-	if check_content_type {
+func hasAccess(r *http.Request, dir string, rpc string, checkContentType bool) bool {
+	if checkContentType {
 		if r.Header.Get("Content-Type") != fmt.Sprintf("application/x-git-%s-request", rpc) {
 			return false
 		}

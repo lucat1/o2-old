@@ -28,19 +28,19 @@ func gitCommand(dir string, version string, args ...string) []byte {
 	return out
 }
 
-func getConfigSetting(service_name string, dir string) bool {
-	service_name = strings.Replace(service_name, "-", "", -1)
-	setting := getGitConfig("http."+service_name, dir)
+func getConfigSetting(serviceName string, dir string) bool {
+	serviceName = strings.Replace(serviceName, "-", "", -1)
+	setting := getGitConfig("http."+serviceName, dir)
 
-	if service_name == "uploadpack" {
+	if serviceName == "uploadpack" {
 		return setting != "false"
 	}
 
 	return setting == "true"
 }
 
-func getGitConfig(config_name string, dir string) string {
-	args := []string{"config", config_name}
+func getGitConfig(configName string, dir string) string {
+	args := []string{"config", configName}
 	out := string(gitCommand(dir, "", args...))
 	return out[0 : len(out)-1]
 }

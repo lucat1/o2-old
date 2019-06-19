@@ -16,6 +16,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// ServiceRPC handles the biggest part of pushing/pulling
+// via the git headless rpc service
+// /:user/:repo/git-upload-pack
 func ServiceRPC(c *gin.Context) {
 	dir := c.Keys["dir"].(string)
 	var rpc string
@@ -121,17 +124,17 @@ func ServiceRPC(c *gin.Context) {
 
 	p := make([]byte, 1024)
 	for {
-		n_read, err := stdout.Read(p)
+		nRead, err := stdout.Read(p)
 		if err == io.EOF {
 			break
 		}
-		n_write, err := c.Writer.Write(p[:n_read])
+		nWrite, err := c.Writer.Write(p[:nRead])
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		if n_read != n_write {
-			fmt.Printf("failed to write data: %d read, %d written\n", n_read, n_write)
+		if nRead != nWrite {
+			fmt.Printf("failed to write data: %d read, %d written\n", nRead, nWrite)
 			os.Exit(1)
 		}
 		flusher.Flush()
