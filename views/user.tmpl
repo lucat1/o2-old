@@ -1,0 +1,26 @@
+{{template "beginning" .}}
+<nav class="title">
+  <a>{{.username}}</a>
+</nav>
+<div class="sep"></div>
+<div class="view">
+  <div class="userdata">
+    <h4>{{.firstname}} {{.lastname}}</h4>
+    <code>
+      {{.description}}
+    </code>
+    <a class="link" href="mailto:{{.email}}">{{.email}}</a>
+  </div>
+  <div class="repos">
+    <h2>Repositories</h2>
+
+    {{range $repo := .repos}}
+      <div class="repo">
+        <a class="link" href="{{$.username}}/{{$repo.Name}}">{{$repo.Name}}</a>
+
+        <code>{{$repo.Description}}</code>
+      </div>
+    {{end}}
+  </div>
+</div>
+{{template "end"}}

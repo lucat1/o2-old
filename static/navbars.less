@@ -1,0 +1,56 @@
+@import "vars";
+
+@title-height: @fontsize * 1.6;
+
+nav {
+  padding: @padding/2 @padding;
+  font-size: @fontsize * 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.title {
+    height: @title-height;
+    padding: 0 @padding;
+    font-size: @fontsize;
+    justify-content: flex-start;
+
+    div.space {
+      height: @title-height;
+      width: 250px;
+    }
+
+    div:not(.space) {
+      display: flex;
+      align-items: center;
+      height: @title-height;
+      padding: 0 @padding;
+
+      &.selected {
+        a { color: @primary-text; }
+        background: @primary-color;
+      }
+    }
+  }
+}
+
+div.sep {
+  height: @title-height/1.25;
+  font-size: @title-height/1.75;
+  display: flex;
+  align-items: center;
+  color: @primary-text;
+  background: @primary-color;
+  padding: 0 @padding;
+
+  div.path {
+    padding: 0;
+    a {
+      padding: 0;
+    }
+  }
+
+  * {
+    padding: 0 @padding;
+  }
+}

@@ -1,0 +1,42 @@
+{{template "beginning" .}}
+{{template "repo" .}}
+<div class="sep">
+  <div class="path">
+    {{range $i, $val := .parents}}
+      <a {{if ne $.parentsl $i }}
+        href="/{{$.username}}/{{$.repo}}/tree/{{$.ref}}{{index $val 1}}"
+      {{end}}>{{index $val 0}}</a>
+      {{if ne $.parentsl $i }}<a>/</a>{{end}}
+    {{end}}
+  </div>
+  {{ if not .directory}}
+    <span>{{.mode}}</span>
+    <span>{{.size}}</span>
+    <a href="/{{.username}}/{{.repo}}/blob/{{.ref}}{{.path}}">raw</a>
+  {{end}}
+</div>
+<div class="view">
+  {{if .directory}}
+    <div class="tree">
+      {{range $val := .files}}
+        <div>{{index $val 0}}</div>
+        <div>
+          <a
+            {{if index $val 2}}class="dir"{{end}}
+            href="/{{$.username}}/{{$.repo}}/tree/{{$.ref}}{{$.path}}{{if and $.directory $.notRoot}}/{{end}}{{index $val 1}}"
+          >{{index $val 1}}</a>
+        </div>
+        <div>commit message</div>
+        <div style="text-align: right">{{index $val 3}}</div>
+      {{end}}
+    </div>
+  {{else}}
+    <style type="text/css">
+    span.ln {
+      user-select: none;
+    }
+    </style>
+    {{.contents}}
+  {{end}}
+</div>
+{{template "end"}}

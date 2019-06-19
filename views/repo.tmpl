@@ -1,0 +1,25 @@
+{{define "repo"}}
+<nav class="title">
+  <span><a class="link" href="/{{.username}}">{{.username}}</a>/{{.repo}}</span>
+  <div class="space"></div>
+  <div {{if .selectedrepo}}class="selected"{{end}}>
+    <a href="/{{.username}}/{{.repo}}">overview</a>
+  </div>
+  <div {{if .selectedtree}}class="selected"{{end}}>
+    <a href="/{{.username}}/{{.repo}}/tree">tree</a>
+  </div>
+  <div {{if .selectedlog}}class="selected"{{end}}>
+    <a href="/{{.username}}/{{.repo}}/log">log</a>
+  </div>
+</nav>
+{{end}}
+
+{{template "beginning" .}}
+{{template "repo" .}}
+<div class="sep"></div>
+<div class="view">
+  <div class="markdown">
+    {{.markdown}}
+  </div>
+</div>
+{{template "end"}}

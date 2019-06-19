@@ -1,0 +1,9 @@
+{{template "beginning" .}}
+{{if .error}}
+  <h1 style="color: red">{{.message}}</h1>
+{{end}}
+<form action="/create" method="POST">
+  <input type="text" name="name" id="name">
+  <button type="submit">Create repo</button>
+</form>
+{{template "end"}}

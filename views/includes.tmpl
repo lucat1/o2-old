@@ -1,0 +1,29 @@
+{{define "beginning"}}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f5f5">
+    <title>git.local - private git server</title>
+    <link rel="stylesheet" type="text/css" href="/static/shared.css">
+  </head>
+  <body>
+  <nav>
+    <a href="/">o2.local</a>
+
+    <div>
+      {{if .user}}
+        <span >{{.user.Username}}</span>
+      {{else}}
+        <a href="/login">Login</a>
+        -
+        <a href="/register">Register</a>
+      {{end}}
+    </div>
+  </nav>
+{{end}}
+
+{{define "end"}}
+  </body>
+</html>
+{{end}}

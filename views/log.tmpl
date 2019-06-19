@@ -1,0 +1,13 @@
+{{template "beginning" .}}
+{{template "repo" .}}
+<div class="sep"></div>
+{{range $commit := .commits}}
+  <li>
+    <div>
+    <a href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.Name}}</a>
+    <code>
+    <pre>{{$commit.Description}}</pre>
+    </code>
+  </li>
+{{end}}
+{{template "end"}}
