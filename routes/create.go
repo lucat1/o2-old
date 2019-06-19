@@ -12,7 +12,7 @@ import (
 func Create(c *gin.Context) {
 	// Create tough has to first check out we're not
 	// in a user path like /luca but we are in fact in /create
-	if c.Request.URL.Path != "/create" {
+	if c.Param("user") != "create" {
 		c.Next() // Skip
 		return
 	}

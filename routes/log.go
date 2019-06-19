@@ -18,9 +18,15 @@ type renderCommit struct {
 // Log renders the repository commits
 // /:user/:repo/log
 func Log(c *gin.Context) {
-	user := c.Param("user")
+	username := c.Param("user")
+	_Irepo, Irepo := c.Keys["_repo"], c.Keys["repo"]
+	if Irepo == nil || _Irepo == nil {
+		NotFound(c)
+		return
+	}
 
-	dbRepo, repo := c.Keys["_repo"].(*shared.Repository), c.Keys["repo"].(*git.Repository)
+	dbRepo := _Irepo.(*shared.Repository)
+	repo := Irepo.(*git.Repository)
 
 	commit := getCommit(c, repo, dbRepo.MainBranch)
 	if commit == nil {
@@ -44,8 +50,9 @@ func Log(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "log.tmpl", gin.H{
-		"username":    user,
+		"username":    username,
 		"repo":        dbRepo.Name,
+		"isownrepo":   isOwnRepo(c, dbRepo.Owner),
 		"selectedlog": true,
 		"commits":     commits,
 		"user":        c.Keys["user"],

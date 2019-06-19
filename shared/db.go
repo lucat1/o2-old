@@ -18,7 +18,7 @@ func OpenDatabase() {
 	}
 
 	db = d
-	db.LogMode(true)
+	//db.LogMode(true)
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Repository{})
 }

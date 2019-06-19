@@ -40,12 +40,18 @@ func authenticate(c *gin.Context, user shared.User) {
 func Login(c *gin.Context) {
 	// Login tough has to first check out we're not
 	// in a user path like /luca but we are in fact in /login
-	if c.Request.URL.Path != "/login" {
+	if c.Param("user") != "login" {
 		c.Next() // Skip
 		return
 	}
 
 	if c.Request.Method == "GET" {
+		if c.Keys["user"] != nil {
+			c.Redirect(301, "/"+c.Keys["user"].(*shared.User).Username)
+			c.Abort()
+			return
+		}
+
 		c.HTML(200, "login.tmpl", gin.H{
 			"user": c.Keys["user"],
 		})

@@ -65,6 +65,7 @@ func Repo(c *gin.Context) {
 		"user":         c.Keys["user"],
 		"repo":         _repo.Name,
 		"selectedrepo": true,
+		"isownrepo":    isOwnRepo(c, _repo.Owner),
 		"markdown":     template.HTML(md),
 	})
 }

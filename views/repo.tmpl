@@ -11,6 +11,11 @@
   <div {{if .selectedlog}}class="selected"{{end}}>
     <a href="/{{.username}}/{{.repo}}/log">log</a>
   </div>
+  {{if .isownrepo }}
+  <div {{if .selectedsettings}}class="selected"{{end}}>
+    <a href="/{{.username}}/{{.repo}}/settings">settings</a>
+  </div>
+  {{end}}
 </nav>
 {{end}}
 

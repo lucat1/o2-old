@@ -1,0 +1,105 @@
+{{template "beginning" .}}
+{{template "repo" .}}
+<div class="sep"></div>
+<div class="view">
+  <div class="settings">
+    <div class="right">
+      <ul>
+        <li><a class="link" href="#general">General</a></li>
+        <li><a class="link" href="#privacy">Privacy</a></li>
+        <li><a class="link" href="#others">Others</a></li>
+      </ul>
+    </div>
+    <div class="left">
+      <form action="/{{.username}}/{{.repo}}/settings" method="POST">
+        <div id="general">
+          <h2>General</h2>
+
+          <h4><a class="link" href="#general-rename">Rename</a></h4>
+          <div id="general-rename">
+            <span>
+              Change the name of your repository as long as it doesn't
+              conflict with any of your other repositories.
+            </span>
+
+            <br><br>
+
+            <input type="text" name="general-rename" id="general-rename" value="{{.repo}}">
+          </div>
+
+          <h4><a class="link" href="#general-ownership">Change ownership</a></h4>
+          <div id="general-ownership">
+            <span>
+              Give the ownership of this repository to another user,
+              changing ungracefully the repository link, possibly invalidating
+              its references.
+            </span>
+  
+              <br><br>
+  
+              <input type="text" name="general-ownership" id="general-ownership" value="{{.username}}">
+          </div>
+
+          <h4><a class="link" href="#general-delete">Delete</a></h4>
+          <div id="general-delete">
+            <span>
+              Delete the repository for ever. The code will be removed from the remote. <br>
+              NOTE: This won't affect your local copy of the repository.
+            </span>
+
+            <br><br>
+
+            <button type="submit" name="general-delete" value="true">Delete</button>
+          </div>
+        </div>
+
+        <div id="privacy">
+          <h2>Privacy</h2>
+
+          <h4><a class="link" href="#privacy-view">View</a></h4>
+          <div id="privacy-view">
+            <span>
+              Set who can view your repository and its tree/readme (essentially pull the data). <br>
+              NOTE: When set to private it is also removed from SEOs (Search engines).
+            </span>
+
+            <br><br>
+
+            <input type="radio" name="privacy-view" id="all" checked><a>Public (everybody can see it)</a> <br>
+            <input type="radio" name="privacy-view" id="some"><a>Locked (only some users)</a> <br>
+            <input type="radio" name="privacy-view" id="none"><a>Private</a> <br>
+          </div>
+
+          <h4><a class="link" href="#privacy-push">Pull</a></h4>
+          <div id="privacy-push">
+              <span>
+                Set who can push data to your repository.
+              </span>
+  
+              <br><br>
+  
+              <input type="radio" name="privacy-push" id="some"><a>Some users</a> <br>
+              <input type="radio" name="privacy-push" id="none" checked><a>Only me</a> <br>
+          </div>
+        </div>
+
+        <div id="others">
+          <h2>Others</h2>
+
+          <h4><a class="link" href="#others-mainbranch">Main Branch</a></h4>
+          <div id="others-mainbranch">
+            <span>
+              Set the default branch to push and pull from, also the one which pull requests
+              are diffed against.
+            </span>
+
+            <br><br>
+
+            <input type="text" name="others-mainbranch" id="others-mainbranch" value="{{.mainbranch}}">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{template "end"}}

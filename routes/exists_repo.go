@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lucat1/git/shared"
+	"go.uber.org/zap"
 )
 
 // ExistsRepo is a helper used to determine if a
@@ -34,7 +35,7 @@ func ExistsRepo(withDatabase bool) gin.HandlerFunc {
 			dir := getRepositoryPath(username, reponame)
 			_, err := os.Stat(dir)
 			if err != nil {
-				fmt.Println(err)
+				shared.GetLogger().Error("Error while looking for git repository", zap.Error(err))
 				c.Status(404)
 				return
 			}

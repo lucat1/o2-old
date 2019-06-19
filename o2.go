@@ -28,8 +28,8 @@ func main() {
 	//router.Use(ginzap.RecoveryWithZap(log, true))
 
 	// Routes
-	router.Use(routes.LogMiddleware)
 	router.Use(routes.AuthMiddleware)
+	router.Use(routes.LogMiddleware)
 	router.Use(static.Serve("/static", static.LocalFile("static", false)))
 	router.GET("/", routes.Index)
 	router.POST("/:user", routes.Logout, routes.Login, routes.Register, routes.Create)
@@ -40,6 +40,7 @@ func main() {
 	router.GET("/:user/:repo/tree/:ref/*path", routes.ExistsRepo(true), routes.Tree)
 	router.GET("/:user/:repo/blob/:ref/*path", routes.ExistsRepo(true), routes.Blob)
 	router.GET("/:user/:repo/log", routes.ExistsRepo(true), routes.Log)
+	router.GET("/:user/:repo/settings", routes.ExistsRepo(true), routes.HasAccess([]string{"repo:settings"}), routes.Settings)
 
 	// Git smart http protocol
 	router.GET("/:user/:repo/info/refs", routes.ExistsRepo(false), git.GetInfoRefs)

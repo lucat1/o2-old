@@ -9,7 +9,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// AuthMiddleware sets the context.key["user"] value
+// AuthMiddleware sets the context.Key["user"] value
 // For all other requests to use
 func AuthMiddleware(c *gin.Context) {
 	cookie, err := c.Cookie("token")
@@ -26,7 +26,7 @@ func AuthMiddleware(c *gin.Context) {
 			var user shared.User
 			shared.GetDatabase().Find(&user, &shared.User{ID: uuid.FromStringOrNil(claims.UUID)})
 
-			// If we're at 1 minute(or lower) from the expiry, refresh the token
+			// If we're at 1 hour(or lower) from the expiry date, refresh the token
 			if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) < time.Hour {
 				shared.GetLogger().Info("Refreshing token")
 				authenticate(c, user)
@@ -36,13 +36,4 @@ func AuthMiddleware(c *gin.Context) {
 	}
 
 	c.Next()
-}
-
-// WithAuth is a middleware that checks for authentication
-func WithAuth(h gin.HandlerFunc, scopes []string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if c.Keys["user"] != nil {
-
-		}
-	}
 }

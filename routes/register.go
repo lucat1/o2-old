@@ -11,7 +11,7 @@ import (
 func Register(c *gin.Context) {
 	// Register tough has to first check out we're not
 	// in a user path like /luca but we are in fact in /register
-	if c.Request.URL.Path != "/register" {
+	if c.Param("user") != "register" {
 		c.Next() // Skip
 		return
 	}

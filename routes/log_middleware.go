@@ -1,9 +1,10 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/git/shared"
-	"time"
 )
 
 // LogMiddleware reports the time spent in requests

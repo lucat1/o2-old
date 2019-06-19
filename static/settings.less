@@ -1,0 +1,32 @@
+div.settings {
+  margin: 0 400px;
+  width: 100%;
+  display: flex;
+
+  div.right {
+    margin-right: @padding * 3;
+
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+  }
+
+  div.left {
+    border-left: 2px solid @background-darker;
+    padding-left: @padding * 3;
+    flex: 1;
+
+    div:not(:nth-child(1)) h2 {
+      border-top: 2px solid @background-darker;
+    }
+
+    div div {
+      padding-left: @padding;
+    }
+
+    h2 {
+      padding: @padding/2 0;
+    }
+  }
+}
