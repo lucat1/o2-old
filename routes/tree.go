@@ -144,6 +144,7 @@ func Tree(c *gin.Context) {
 	if isTree || entry.(*git.TreeEntry).IsDir() {
 		sub, _ := commit.SubTree(path)
 		entries, _ := sub.ListEntries()
+		entries.Sort()
 
 		_files, err := entries.GetCommitsInfo(commit, path, nil)
 		if err != nil {
