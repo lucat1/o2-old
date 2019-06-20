@@ -11,6 +11,9 @@
   <div {{if .selectedlog}}class="selected"{{end}}>
     <a href="/{{.username}}/{{.repo}}/log">log</a>
   </div>
+  <div {{if .selecteddiff}}class="selected"{{end}}>
+    <a>diff</a>
+  </div>
   {{if .isownrepo }}
   <div {{if .selectedsettings}}class="selected"{{end}}>
     <a href="/{{.username}}/{{.repo}}/settings">settings</a>
@@ -23,7 +26,7 @@
 {{template "repo" .}}
 <div class="sep"></div>
 <div class="view">
-  <div class="page">
+  <div class="page markdown">
     {{.markdown}}
   </div>
 </div>

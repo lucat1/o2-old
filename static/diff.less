@@ -1,0 +1,30 @@
+@import "vars";
+
+div.diff {
+  margin: 0 300px;
+  flex-direction: column;
+  overflow: auto;
+
+  div.commit:first-child {
+    margin-bottom: @padding*4;
+  }
+
+  div.commit:not(:first-child) {
+    padding: 0;
+
+    div.headline {
+      margin: 0;
+      padding: 0 @padding;
+      background: @primary-color;
+      color: @primary-text;
+    }
+
+    div {
+      &.added { background: @transparent-green; }
+      &.deleted { background: @transparent-red ; }
+      &.header { background: darken(@background-darker, 10); }
+
+      pre { margin: 0 }
+    }
+  }
+}

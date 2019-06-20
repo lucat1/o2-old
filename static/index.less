@@ -6,6 +6,7 @@
 @import "buttons";
 @import "inputs";
 @import "login";
+@import "commit";
 
 html { background: @background; }
 
@@ -14,6 +15,8 @@ body {
   font-family: @fontfamily;
   font-size: @fontsize;
   color: @text-color;
+  font-feature-settings: "calt" 1;  /* Enable ligatures for IE 10+, Edge */
+  text-rendering: optimizeLegibility; /* Force ligatures for Webkit, Blink, Gecko */
 
   display: flex;
   flex-direction: column;

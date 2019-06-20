@@ -1,0 +1,42 @@
+{{template "beginning" .}}
+{{template "repo" .}}
+<div class="sep"></div>
+<div class="view">
+  <div class="page diff">
+    <div class="commit">
+      <div class="headline">
+        <span>
+          <a class="link" href="/{{.username}}/{{.repo}}/tree/{{.id}}">{{.shortid}}</a>
+          -->
+          <a class="link" href="/{{.author.Name}}">{{.author.Name}}</a>
+          (<a>{{.author.Email}}</a>)
+        </span>
+        
+        <a class="time">{{.time}}</a>
+      </div>
+      <a>{{.name}}</a>
+      {{if ne .description ""}}
+        <div class="description">
+          <span>{{.description}}</span>
+        </div>
+      {{end}}
+    </div>
+
+    {{range $file := .diff}}
+      <div class="commit">
+        <div class="headline">
+          <a>{{$file.FromFile}} --> {{$file.ToFile}}</a>
+          <a>{{$file.Change}}</a>
+        </div>
+      
+        {{range $part := $file.Parts}}
+          {{range $i, $line := $part.Lines}}
+            <div class="{{$line.Class}}{{if eq $i 0}} header{{end}}">
+              <pre>{{if eq $i 0}}@@{{$part.Header}} @@ {{end}}{{$line.Render}}</pre>
+            </div>
+          {{end}}
+        {{end}}
+      </div>
+    {{end}}
+  </div>
+</div>

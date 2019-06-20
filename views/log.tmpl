@@ -7,22 +7,28 @@
       <ul>
         {{range $commit := .commits}}
           <li>
-            <div class="headline">
-              <span>
-                <a class="link" href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.ShortID}}</a>
-                --
-                <a class="link" href="/{{$commit.Author.Name}}">{{$commit.Author.Name}}</a>
-                (<a>{{$commit.Author.Email}}</a>)
-              </span>
-              
-              <a class="time">{{$commit.Time}}</a>
-            </div>
-            <a>{{$commit.Name}}</a>
-            {{if ne $commit.Description ""}}
-              <div class="description">
-                <span>{{$commit.Description}}</span>
+            <div class="commit">
+              <div class="headline">
+                <span>
+                  <a class="link" href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.ShortID}}</a>
+                  -->
+                  <a class="link" href="/{{$commit.Author.Name}}">{{$commit.Author.Name}}</a>
+                  (<a>{{$commit.Author.Email}}</a>)
+
+                  <button class="secondary">
+                    <a href="/{{$.username}}/{{$.repo}}/diff/{{$commit.ID}}">diff</a>
+                  </button>
+                </span>
+                
+                <a class="time">{{$commit.Time}}</a>
               </div>
-            {{end}}
+              <a>{{$commit.Name}}</a>
+              {{if ne $commit.Description ""}}
+                <div class="description">
+                  <span>{{$commit.Description}}</span>
+                </div>
+              {{end}}
+            </div>
           </li>
         {{end}}
       </ul>

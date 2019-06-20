@@ -56,7 +56,7 @@ func Repo(c *gin.Context) {
 			return
 		}
 		md = markdown.ToHTML(bytes, nil, html.NewRenderer(html.RendererOptions{
-			AbsolutePrefix: "http://o2.local/" + username + "/" + _repo.Name + "/blob/master",
+			AbsolutePrefix: "/" + username + "/" + _repo.Name,
 		}))
 	}
 
