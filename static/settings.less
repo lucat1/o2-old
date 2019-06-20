@@ -1,8 +1,4 @@
 div.settings {
-  margin: 0 400px;
-  width: 100%;
-  display: flex;
-
   @media (min-width: 320px) and (max-width: 480px) {
     margin: @padding;
     flex-direction: column;
@@ -25,6 +21,7 @@ div.settings {
     border-left: 2px solid @background-darker;
     padding-left: @padding * 3;
     flex: 1;
+    overflow: auto;
 
     div:not(:nth-child(1)) h2 {
       border-top: 2px solid @background-darker;
@@ -41,6 +38,7 @@ div.settings {
     @media (min-width: 320px) and (max-width: 480px) {
       border: none;
       padding-left: 0;
+      overflow: unset;
 
       div input {
         width: calc(100% - @padding);

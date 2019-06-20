@@ -3,16 +3,21 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"code.gitea.io/git"
+	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/git/shared"
 )
 
 type renderCommit struct {
 	ID          string
+	ShortID     string
+	Author      *git.Signature
 	Name        string
 	Description string
+	Time        string
 }
 
 // Log renders the repository commits
@@ -42,10 +47,14 @@ func Log(c *gin.Context) {
 	var commits []*renderCommit
 	for e := _commits.Front(); e != nil; e = e.Next() {
 		commit := e.Value.(*git.Commit)
+		id := commit.ID.String()
 		commits = append(commits, &renderCommit{
-			ID:          commit.ID.String(),
-			Description: commit.Summary(),
-			Name:        commit.CommitMessage,
+			ID:          id,
+			ShortID:     id[:8],
+			Author:      commit.Author,
+			Name:        commit.Summary(),
+			Description: strings.Replace(commit.Message(), commit.Summary()+"\n", "", 1),
+			Time:        humanize.Time(commit.Author.When),
 		})
 	}
 

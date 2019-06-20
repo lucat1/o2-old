@@ -1,0 +1,29 @@
+@import "vars";
+
+div.userdata {
+  margin-left: @padding;
+  width: calc(30% - @padding);
+}
+
+div.repos {
+  margin-right: @padding;
+  width: calc(70% - @padding);
+  padding: 0 @padding * 5;
+
+  div.repo {
+    width: 100%;
+    height: @padding * 5;
+    margin: @padding 0;
+    background: @background-darker;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  flex-direction: column;
+
+  div.userdata, div.repos {
+    margin: 0;
+    width: calc(100% - @padding*2);
+    padding: 0 @padding;
+  }
+}

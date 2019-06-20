@@ -1,13 +1,30 @@
 {{template "beginning" .}}
 {{template "repo" .}}
 <div class="sep"></div>
-{{range $commit := .commits}}
-  <li>
-    <div>
-    <a href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.Name}}</a>
-    <code>
-    <pre>{{$commit.Description}}</pre>
-    </code>
-  </li>
-{{end}}
+<div class="view">
+  <div class="page log" style="flex-direction: column;">
+    <ul>
+      {{range $commit := .commits}}
+        <li>
+          <div class="headline">
+            <span>
+              <a class="link" href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.ShortID}}</a>
+              --
+              <a class="link" href="/{{$commit.Author.Name}}">{{$commit.Author.Name}}</a>
+              (<a>{{$commit.Author.Email}}</a>)
+            </span>
+            
+            <a class="time">{{$commit.Time}}</a>
+          </div>
+          <a>{{$commit.Name}}</a>
+          {{if ne $commit.Description ""}}
+            <div class="description">
+              <span>{{$commit.Description}}</span>
+            </div>
+          {{end}}
+        </li>
+      {{end}}
+    </ul>
+  </div>
+</div>
 {{template "end"}}

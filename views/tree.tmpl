@@ -17,6 +17,7 @@
 </div>
 <div class="view">
   {{if .directory}}
+    <style>div.view { display: block </style>
     <div class="tree">
       {{range $val := .files}}
         <div class="mod">{{index $val 0}}</div>
