@@ -17,3 +17,8 @@ button:active, button:focus {
 button.secondary {
   background: @secondary-color;
 }
+
+button:disabled, button[disabled] {
+  background: @background-darker;
+  color: lighten(@text-color, 70);
+}

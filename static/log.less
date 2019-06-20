@@ -1,34 +1,47 @@
 @import "vars";
 
 div.log {
-  overflow: auto;
+  div.scroll {
+    overflow: auto;
 
-  @media (min-width: 320px) and (max-width: 480px) {
-    overflow: unset;
+    @media (min-width: 320px) and (max-width: 480px) {
+      overflow: unset;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0 @padding * 2;
+      margin: 0;
+
+      li {
+        background: @background-darker;
+        padding: @padding;
+        margin: @padding;
+
+        div.headline {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: @padding/1.5;
+
+          .time { color: @primary-color; }
+        }
+
+        // Description
+        div.description {
+          margin-top: @padding;
+        }
+      }
+    }
   }
 
-  ul {
-    list-style: none;
-    padding: 0 @padding * 2;
-    margin: 0;
+  div.pages {
+    margin: @padding * 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    li {
-      background: @background-darker;
-      padding: @padding;
-      margin: @padding;
-
-      div.headline {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: @padding/1.5;
-
-        .time { color: @primary-color; }
-      }
-
-      // Description
-      div.description {
-        margin-top: @padding;
-      }
+    button {
+      margin: @padding/4;
     }
   }
 }

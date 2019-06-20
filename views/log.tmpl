@@ -3,28 +3,36 @@
 <div class="sep"></div>
 <div class="view">
   <div class="page log" style="flex-direction: column;">
-    <ul>
-      {{range $commit := .commits}}
-        <li>
-          <div class="headline">
-            <span>
-              <a class="link" href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.ShortID}}</a>
-              --
-              <a class="link" href="/{{$commit.Author.Name}}">{{$commit.Author.Name}}</a>
-              (<a>{{$commit.Author.Email}}</a>)
-            </span>
-            
-            <a class="time">{{$commit.Time}}</a>
-          </div>
-          <a>{{$commit.Name}}</a>
-          {{if ne $commit.Description ""}}
-            <div class="description">
-              <span>{{$commit.Description}}</span>
+    <div class="scroll">
+      <ul>
+        {{range $commit := .commits}}
+          <li>
+            <div class="headline">
+              <span>
+                <a class="link" href="/{{$.username}}/{{$.repo}}/tree/{{$commit.ID}}">{{$commit.ShortID}}</a>
+                --
+                <a class="link" href="/{{$commit.Author.Name}}">{{$commit.Author.Name}}</a>
+                (<a>{{$commit.Author.Email}}</a>)
+              </span>
+              
+              <a class="time">{{$commit.Time}}</a>
             </div>
-          {{end}}
-        </li>
-      {{end}}
-    </ul>
+            <a>{{$commit.Name}}</a>
+            {{if ne $commit.Description ""}}
+              <div class="description">
+                <span>{{$commit.Description}}</span>
+              </div>
+            {{end}}
+          </li>
+        {{end}}
+      </ul>
+    </div>
+    <div class="pages">
+      <button {{if eq .prevpage 0}}disabled{{end}}>
+        <a {{if ne .prevpage 0}}href="/{{$.username}}/{{$.repo}}/log/{{.prevpage}}"{{end}}>Prev page</a>
+      </button>
+      <button><a href="/{{$.username}}/{{$.repo}}/log/{{.nextpage}}">Next page</a></button>
+    </div>
   </div>
 </div>
 {{template "end"}}

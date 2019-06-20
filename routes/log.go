@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"code.gitea.io/git"
@@ -24,10 +25,21 @@ type renderCommit struct {
 // /:user/:repo/log
 func Log(c *gin.Context) {
 	username := c.Param("user")
+	_page := c.Param("page")
 	_Irepo, Irepo := c.Keys["_repo"], c.Keys["repo"]
 	if Irepo == nil || _Irepo == nil {
 		NotFound(c)
 		return
+	}
+
+	page := 1
+	if _page != "" {
+		_Page, err := strconv.Atoi(_page)
+		if err != nil {
+			NotFound(c)
+			return
+		}
+		page = _Page
 	}
 
 	dbRepo := _Irepo.(*shared.Repository)
@@ -38,7 +50,7 @@ func Log(c *gin.Context) {
 		NotFound(c)
 		return
 	}
-	_commits, err := commit.CommitsBeforeLimit(20)
+	_commits, err := commit.CommitsByRange(page)
 	if err != nil {
 		c.AbortWithError(500, fmt.Errorf("Could not load commits %e", err))
 		return
@@ -65,5 +77,7 @@ func Log(c *gin.Context) {
 		"selectedlog": true,
 		"commits":     commits,
 		"user":        c.Keys["user"],
+		"nextpage":    page + 1,
+		"prevpage":    page - 1,
 	})
 }
