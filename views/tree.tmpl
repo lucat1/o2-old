@@ -19,16 +19,16 @@
   {{if .directory}}
     <style>div.view { display: block }</style>
     <div class="tree">
-      {{range $val := .files}}
-        <div class="mod">{{index $val 0}}</div>
+      {{range $file := .files}}
+        <div class="mod">{{$file.Mode}}</div>
         <div>
           <a
-            {{if index $val 2}}class="dir"{{end}}
-            href="/{{$.username}}/{{$.repo}}/tree/{{$.ref}}{{$.path}}{{if and $.directory $.notRoot}}/{{end}}{{index $val 1}}"
-          >{{index $val 1}}</a>
+            {{if $file.IsDir}}class="dir"{{end}}
+            href="/{{$.username}}/{{$.repo}}/tree/{{$.ref}}{{$.path}}{{if and $.directory $.notRoot}}/{{end}}{{$file.Name}}"
+          >{{$file.Name}}</a>
         </div>
-        <div class="msg">commit message</div>
-        <div style="text-align: right">{{index $val 3}}</div>
+        <div class="msg">{{$file.Summary}}</div>
+        <div style="text-align: right">{{$file.Size}}</div>
       {{end}}
     </div>
   {{else}}

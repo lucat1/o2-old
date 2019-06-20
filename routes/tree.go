@@ -37,26 +37,41 @@ func getCommit(c *gin.Context, repo *git.Repository, branch string) *git.Commit 
 	return commit
 }
 
-func buildEntry(entry *git.TreeEntry) []interface{} {
-	var mode string
-	switch entry.Mode() {
-	case git.EntryModeBlob:
-		mode = "-rw-r--r--"
-	case git.EntryModeTree:
-		mode = "d---------"
-	case git.EntryModeExec:
-		mode = "-rwxr-xr-x"
-	case git.EntryModeSymlink:
-		mode = "lrwxr-xr-x"
-	case git.EntryModeCommit:
-		mode = "----------"
-	}
+// Entry represents a file in the tree
+type Entry struct {
+	Mode    string
+	Name    string
+	IsDir   bool
+	Size    string
+	Summary string
+}
 
-	return []interface{}{
-		mode,
-		entry.Name(),
-		entry.IsDir(),
-		humanize.Bytes(uint64(entry.Size())),
+func stringifyMode(mode git.EntryMode) string {
+	switch mode {
+	case git.EntryModeBlob:
+		return "-rw-r--r--"
+	case git.EntryModeTree:
+		return "d---------"
+	case git.EntryModeExec:
+		return "-rwxr-xr-x"
+	case git.EntryModeSymlink:
+		return "lrwxr-xr-x"
+	case git.EntryModeCommit:
+		return "----------"
+	}
+	return ""
+}
+
+func buildEntry(commitAndEntry []interface{}) *Entry {
+	entry := commitAndEntry[0].(*git.TreeEntry)
+	commit := commitAndEntry[1].(*git.Commit)
+
+	return &Entry{
+		Mode:    stringifyMode(entry.Mode()),
+		Name:    entry.Name(),
+		IsDir:   entry.IsDir(),
+		Size:    humanize.Bytes(uint64(entry.Size())),
+		Summary: commit.Summary(),
 	}
 }
 
@@ -66,8 +81,8 @@ func Tree(c *gin.Context) {
 	username := c.Param("user")
 	ref := c.Param("ref")
 	path := c.Param("path")
-	if path == "" {
-		path = "/"
+	if path != "" {
+		path = strings.Replace(path, "/", "", 1)
 	}
 
 	_Irepo, Irepo := c.Keys["_repo"], c.Keys["repo"]
@@ -121,20 +136,34 @@ func Tree(c *gin.Context) {
 		parents = append(parents, []string{p, prev})
 	}
 
+	_path := path
+	if path != "" {
+		_path = "/" + path
+	}
+
 	if isTree || entry.(*git.TreeEntry).IsDir() {
 		sub, _ := commit.SubTree(path)
 		entries, _ := sub.ListEntries()
-		var files [][]interface{}
-		for _, entry := range entries {
-			files = append(files, buildEntry(entry))
+
+		_files, err := entries.GetCommitsInfo(commit, path, nil)
+		if err != nil {
+			shared.GetLogger().Error("Could not load commits infos", zap.Error(err))
+			NotFound(c)
+			return
 		}
+
+		var files []*Entry
+		for _, file := range _files {
+			files = append(files, buildEntry(file))
+		}
+
 		c.HTML(http.StatusOK, "tree.tmpl", gin.H{
 			"username":     username,
 			"user":         c.Keys["user"],
 			"repo":         dbRepo.Name,
 			"isownrepo":    isOwnRepo(c, dbRepo.Owner),
 			"ref":          ref,
-			"path":         path,
+			"path":         _path,
 			"parents":      parents,
 			"parentsl":     len(parents) - 1,
 			"selectedtree": true,
@@ -181,21 +210,21 @@ func Tree(c *gin.Context) {
 			contents = template.HTML(buf.String())
 		}
 
-		data := buildEntry(entry)
+		//data := buildEntry(entry)
 		c.HTML(http.StatusOK, "tree.tmpl", &gin.H{
 			"username":     username,
 			"user":         c.Keys["user"],
 			"repo":         dbRepo.Name,
 			"isownrepo":    isOwnRepo(c, dbRepo.Owner),
 			"ref":          ref,
-			"path":         path,
+			"path":         _path,
 			"parents":      parents,
 			"parentsl":     len(parents) - 1,
 			"selectedtree": true,
 			"directory":    false,
 			"contents":     contents,
-			"mode":         data[0].(string),
-			"size":         data[3],
+			"mode":         stringifyMode(entry.Mode()),
+			"size":         humanize.Bytes(uint64(entry.Size())),
 		})
 	}
 }
