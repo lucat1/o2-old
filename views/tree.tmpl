@@ -17,7 +17,7 @@
 </div>
 <div class="view">
   {{if .directory}}
-    <style>div.view { display: block </style>
+    <style>div.view { display: block }</style>
     <div class="tree">
       {{range $val := .files}}
         <div class="mod">{{index $val 0}}</div>
@@ -32,12 +32,14 @@
       {{end}}
     </div>
   {{else}}
+    <div class="code">
     <style type="text/css">
-    span.ln {
-      user-select: none;
-    }
+      span.ln {
+        user-select: none;
+      }
     </style>
     {{.contents}}
+    </div>
   {{end}}
 </div>
 {{template "end"}}
