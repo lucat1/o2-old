@@ -26,38 +26,31 @@ func Repo(c *gin.Context) {
 	repo := Irepo.(*git.Repository)
 
 	commit := getCommit(c, repo, _repo.MainBranch)
+	var md []byte
 
 	if commit == nil {
-		// Uninitialized repo, should simply display clone infos
-		c.HTML(http.StatusOK, "repo.tmpl", gin.H{
-			"username":     username,
-			"user":         c.Keys["user"],
-			"repo":         _repo.Name,
-			"selectedrepo": true,
-			"markdown":     "Please clone the repo and start committing to it",
-		})
-		return
-	}
-
-	var md []byte
-	blob, err := commit.GetBlobByPath("README.md")
-	if err != nil {
-		md = []byte{}
+		// No commits yet, prompt the user to clone the repo and push
+		md = []byte("Please clone the repo and start committing to it")
 	} else {
-		reader, err := blob.Data()
+		blob, err := commit.GetBlobByPath("README.md")
 		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
+			md = []byte{}
+		} else {
+			reader, err := blob.Data()
+			if err != nil {
+				c.AbortWithError(500, err)
+				return
+			}
 
-		bytes, err := ioutil.ReadAll(reader)
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
+			bytes, err := ioutil.ReadAll(reader)
+			if err != nil {
+				c.AbortWithError(500, err)
+				return
+			}
+			md = markdown.ToHTML(bytes, nil, html.NewRenderer(html.RendererOptions{
+				AbsolutePrefix: "/" + username + "/" + _repo.Name,
+			}))
 		}
-		md = markdown.ToHTML(bytes, nil, html.NewRenderer(html.RendererOptions{
-			AbsolutePrefix: "/" + username + "/" + _repo.Name,
-		}))
 	}
 
 	c.HTML(http.StatusOK, "repo.tmpl", gin.H{
