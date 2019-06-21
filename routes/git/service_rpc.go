@@ -4,7 +4,6 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -93,17 +92,17 @@ func ServiceRPC(c *gin.Context) {
 	cmd.Env = env
 	in, err := cmd.StdinPipe()
 	if err != nil {
-		log.Print(err)
+		shared.GetLogger().Warn("Error in service-rpc while reading stdin", zap.Error(err))
 	}
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Print(err)
+		shared.GetLogger().Warn("Error in service-rpc while reading stdout", zap.Error(err))
 	}
 
 	err = cmd.Start()
 	if err != nil {
-		log.Print(err)
+		shared.GetLogger().Warn("Error in service-rpc while reading exit error code", zap.Error(err))
 	}
 
 	var reader io.ReadCloser

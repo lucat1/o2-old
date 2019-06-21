@@ -1,8 +1,6 @@
 package shared
 
 import (
-	"log"
-
 	"go.uber.org/zap"
 )
 
@@ -12,7 +10,7 @@ var logger *zap.Logger
 func InitializeLogger() {
 	l, err := zap.NewProduction()
 	if err != nil {
-		log.Fatal("Could not initialize the logger", err)
+		panic("Could not initialize the logger: \n" + err.Error())
 	}
 	logger = l
 }

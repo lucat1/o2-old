@@ -2,10 +2,12 @@ package git
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/lucat1/git/shared"
+	"go.uber.org/zap"
 )
 
 func updateServerInfo(dir string) []byte {
@@ -22,7 +24,12 @@ func gitCommand(dir string, version string, args ...string) []byte {
 	out, err := command.Output()
 
 	if err != nil {
-		log.Print(err)
+		shared.GetLogger().Warn(
+			"Error while executing git command",
+			zap.String("dir", dir),
+			zap.String("version", version),
+			zap.Strings("args", args),
+		)
 	}
 
 	return out

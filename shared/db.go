@@ -1,9 +1,8 @@
 package shared
 
 import (
-	"log"
-
 	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
 	// SQLite driver
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -14,7 +13,7 @@ var db *gorm.DB
 func OpenDatabase() {
 	d, err := gorm.Open("sqlite3", "db.db")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("Could not initialize the database", zap.Error(err))
 	}
 
 	db = d

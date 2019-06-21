@@ -1,9 +1,15 @@
 package main
 
 import (
+	"html/template"
+	"io/ioutil"
+	"os"
 	"runtime"
+	"strings"
+	"time"
 
 	"github.com/gin-contrib/static"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/git/routes"
 	"github.com/lucat1/git/routes/git"
@@ -17,20 +23,35 @@ func main() {
 	shared.InitializeLogger()
 	shared.OpenDatabase()
 
+	if os.Getenv("O2") != "dev" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	// Router creation
 	gin.DisableConsoleColor()
 	router := gin.New()
-	router.LoadHTMLGlob("views/*.tmpl")
+	if os.Getenv("O2") == "dev" {
+		router.LoadHTMLGlob("views/*.tmpl")
+	} else {
+		t, err := loadTemplate()
+		if err != nil {
+			shared.GetLogger().Fatal("Could not load views templates, quitting", zap.Error(err))
+		}
+		router.SetHTMLTemplate(t)
 
-	// Logging setup
-	log := shared.GetLogger()
-	//router.Use(ginzap.Ginzap(log, time.RFC3339, true))
-	//router.Use(ginzap.RecoveryWithZap(log, true))
+		router.Use(ginzap.Ginzap(shared.GetLogger(), time.RFC3339, true))
+		router.Use(ginzap.RecoveryWithZap(shared.GetLogger(), true))
+	}
 
 	// Routes
 	router.Use(routes.AuthMiddleware)
-	router.Use(routes.LogMiddleware)
-	router.Use(static.Serve("/static", static.LocalFile("static", false)))
+
+	if os.Getenv("O2") == "dev" {
+		router.Use(static.Serve("/static", static.LocalFile("static", false)))
+	} else {
+		router.Use(routes.Static(Assets.Files))
+	}
+
 	router.GET("/", routes.Index)
 	router.POST("/:user", routes.Logout, routes.Login, routes.Register, routes.Create)
 	router.GET("/:user", routes.Logout, routes.Login, routes.Register, routes.Create, routes.User)
@@ -66,5 +87,25 @@ func main() {
 	router.NoRoute(routes.NotFound)
 	router.NoMethod(routes.NotFound)
 
-	log.Fatal("Error while serving HTTP", zap.Error(router.Run(":80")))
+	shared.GetLogger().Fatal("Error while serving HTTP", zap.Error(router.Run(":80")))
+}
+
+func loadTemplate() (*template.Template, error) {
+	t := template.New("")
+	for name, file := range Assets.Files {
+		if file.IsDir() || !strings.HasSuffix(name, ".tmpl") {
+			continue
+		}
+		h, err := ioutil.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
+		name = strings.Replace(name, "/views/", "", 1)
+		t, err = t.New(name).Parse(string(h))
+		shared.GetLogger().Info("Registering template", zap.String("name", name))
+		if err != nil {
+			return nil, err
+		}
+	}
+	return t, nil
 }
