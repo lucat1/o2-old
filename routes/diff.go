@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"html/template"
 	"path/filepath"
 	"strings"
@@ -57,6 +58,10 @@ func (l *Line) Class() string {
 
 func getLatestPart(diffs []*FileDiff) *Part {
 	diff := diffs[len(diffs)-1]
+	if len(diff.Parts) == 0 {
+		return nil
+	}
+
 	return diff.Parts[len(diff.Parts)-1]
 }
 
@@ -93,7 +98,7 @@ func Diff(c *gin.Context) {
 		return
 	}
 
-	args := append([]string{"diff", firstID, secondID, "--"}, statuses.Modified...)
+	args := append([]string{"diff", secondID, firstID, "--"}, statuses.Modified...)
 	cmd := git.NewCommand(args...)
 	out, err := cmd.RunInDir(repoPath)
 	if err != nil {
@@ -101,6 +106,8 @@ func Diff(c *gin.Context) {
 		NotFound(c)
 		return
 	}
+
+	fmt.Println(out)
 
 	insertions, deletions := 0, 0
 	var diffs []*FileDiff
@@ -147,20 +154,24 @@ func Diff(c *gin.Context) {
 		} else {
 			// Simple diff line
 			latestPart := getLatestPart(diffs)
-			lineType := LineUnchanged
-			if strings.HasPrefix(line, "+") {
-				lineType = LineDeletion
-				deletions++
-			} else if strings.HasPrefix(line, "-") {
-				lineType = LineAddition
-				insertions++
-			}
+			if latestPart == nil {
+				shared.GetLogger().Info("Igoring git diff line", zap.String("line", line))
+			} else {
+				lineType := LineUnchanged
+				if strings.HasPrefix(line, "-") {
+					lineType = LineDeletion
+					deletions++
+				} else if strings.HasPrefix(line, "+") {
+					lineType = LineAddition
+					insertions++
+				}
 
-			latestPart.Lines = append(latestPart.Lines, &Line{
-				raw:    line,
-				Number: i,
-				Type:   lineType,
-			})
+				latestPart.Lines = append(latestPart.Lines, &Line{
+					raw:    line,
+					Number: i,
+					Type:   lineType,
+				})
+			}
 		}
 	}
 
