@@ -25,3 +25,7 @@
 <p align="center">
   <img src="./screens/6.png">
 </p>
+
+<p align="center">
+  <img src="./screens/7.png">
+</p>
