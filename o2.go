@@ -52,6 +52,7 @@ func main() {
 	router.POST("/:user", routes.Logout, routes.Login, routes.Register, routes.Create)
 	router.GET("/:user", routes.Logout, routes.Login, routes.Register, routes.Create, routes.User)
 	router.GET("/:user/:repo", routes.ExistsRepo(true), routes.Repo)
+	router.GET("/:user/:repo/", routes.ExistsRepo(true), routes.Repo)
 	router.GET("/:user/:repo/tree", routes.ExistsRepo(true), routes.Tree)
 	router.GET("/:user/:repo/tree/:ref", routes.ExistsRepo(true), routes.Tree)
 	router.GET("/:user/:repo/tree/:ref/*path", routes.ExistsRepo(true), routes.Tree)
