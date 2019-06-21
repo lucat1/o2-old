@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,16 +13,30 @@ import (
 // /favicon.ico
 // /shared.css
 func Static(assets map[string]*assets.File) func(*gin.Context) {
+	if os.Getenv("O2") == "dev" {
+		// Serve fiels from the fs
+		return func(c *gin.Context) {
+			url := c.Request.URL.Path
+			if strings.HasPrefix(url, "/static/") || url == "/favicon.ico" {
+				if url == "/favicon.ico" {
+					url = "/shared/favicon.ico"
+				}
+
+				http.ServeFile(c.Writer, c.Request, "."+url)
+				c.Abort()
+			}
+		}
+	}
+
 	return func(c *gin.Context) {
 		url := c.Request.URL.Path
 		if strings.HasPrefix(url, "/static/") || url == "/favicon.ico" {
-			asset := assets[url]
 			if url == "/favicon.ico" {
-				asset = assets["/shared/favicon.ico"]
+				url = "/shared/favicon.ico"
 			}
 
-			if asset != nil {
-				c.Writer.Write(asset.Data)
+			if assets[url] != nil {
+				c.Writer.Write(assets[url].Data)
 				c.Abort()
 				return
 			}

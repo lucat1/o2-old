@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-contrib/static"
+	"github.com/gin-contrib/gzip"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/o2/routes"
@@ -45,12 +45,8 @@ func main() {
 
 	// Routes
 	router.Use(routes.AuthMiddleware)
-
-	if os.Getenv("O2") == "dev" {
-		router.Use(static.Serve("/static", static.LocalFile("static", false)))
-	} else {
-		router.Use(routes.Static(Assets.Files))
-	}
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
+	router.Use(routes.Static(Assets.Files))
 
 	router.GET("/", routes.Index)
 	router.POST("/:user", routes.Logout, routes.Login, routes.Register, routes.Create)
