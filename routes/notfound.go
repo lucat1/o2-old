@@ -9,8 +9,13 @@ import (
 // NotFound is the 404 route
 // 404 route
 func NotFound(c *gin.Context) {
+	if c.Keys["notfound"] != nil {
+		shared.GetLogger().Warn("Called NotFound twice!!")
+		return
+	}
+
 	shared.GetLogger().Info(
-		"Hit 404",
+		"Rendering NotFound for route",
 		zap.String("path", c.Request.URL.Path),
 		zap.String("method", c.Request.Method),
 	)
@@ -20,4 +25,5 @@ func NotFound(c *gin.Context) {
 		"user": c.Keys["user"],
 	})
 	c.Abort()
+	c.Keys["notfound"] = true
 }

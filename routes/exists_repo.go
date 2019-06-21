@@ -22,7 +22,7 @@ func ExistsRepo(withDatabase bool) gin.HandlerFunc {
 		if withDatabase {
 			_repo, repo := findRepo(c, username, reponame)
 			if repo == nil {
-				NotFound(c)
+				// NotFound is already handled
 				return
 			}
 
