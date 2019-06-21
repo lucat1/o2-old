@@ -13,4 +13,4 @@ less:
 	lessc static/index.less static/shared.css
 
 less-watch:
-	ls shared/*.less | entr lessc static/index.less static/shared.css
+	ls static/*.less | entr lessc static/index.less static/shared.css
