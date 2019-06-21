@@ -1,4 +1,4 @@
-module github.com/lucat1/git
+module github.com/lucat1/o2
 
 go 1.12
 
