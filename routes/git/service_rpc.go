@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/routes"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/routes"
+	"github.com/lucat1/o2/shared"
 	"go.uber.org/zap"
 )
 

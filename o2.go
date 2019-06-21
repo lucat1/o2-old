@@ -11,9 +11,9 @@ import (
 	"github.com/gin-contrib/static"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/routes"
-	"github.com/lucat1/git/routes/git"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/routes"
+	"github.com/lucat1/o2/routes/git"
+	"github.com/lucat1/o2/shared"
 	"go.uber.org/zap"
 )
 

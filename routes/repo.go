@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/shared"
 )
 
 // Repo renders the repository view

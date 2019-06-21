@@ -7,7 +7,7 @@ import (
 	"path"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/routes"
+	"github.com/lucat1/o2/routes"
 )
 
 func sendFile(contentType string, c *gin.Context) {

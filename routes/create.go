@@ -4,7 +4,7 @@ import (
 	"code.gitea.io/git"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/shared"
 )
 
 // Create is the /create route, to create repos

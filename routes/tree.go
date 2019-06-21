@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/shared"
 
 	"code.gitea.io/git"
 	"github.com/alecthomas/chroma/formatters/html"

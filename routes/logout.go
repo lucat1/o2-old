@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/shared"
 )
 
 // Logout removes the session token from the request

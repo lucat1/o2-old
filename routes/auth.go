@@ -5,7 +5,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/git/shared"
+	"github.com/lucat1/o2/shared"
 	uuid "github.com/satori/go.uuid"
 )
 
