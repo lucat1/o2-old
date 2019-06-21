@@ -2,6 +2,7 @@ package routes
 
 import (
 	"html/template"
+	"path/filepath"
 	"strings"
 
 	"code.gitea.io/git"
@@ -101,6 +102,7 @@ func Diff(c *gin.Context) {
 		return
 	}
 
+	insertions, deletions := 0, 0
 	var diffs []*FileDiff
 	var latestDiffBeginning = 0
 	lines := strings.Split(out, "\n")
@@ -110,11 +112,11 @@ func Diff(c *gin.Context) {
 			files := strings.Split(strings.Replace(line, "diff --git ", "", 1), " ")
 			fromFile, toFile := files[0], files[1]
 			diffs = append(diffs, &FileDiff{
-				FromFile: strings.Replace(fromFile, "a/", "", 1),
-				ToFile:   strings.Replace(toFile, "b/", "", 1),
+				FromFile: filepath.Base(fromFile),
+				ToFile:   filepath.Base(toFile),
 			})
 			latestDiffBeginning = i
-		} else if i == latestDiffBeginning+1 {
+		} else if i <= latestDiffBeginning+1 {
 			// The line where the type of change is declared
 			diffs[len(diffs)-1].Change = line
 		} else if strings.HasPrefix(line, "---") || strings.HasPrefix(line, "+++") {
@@ -148,8 +150,10 @@ func Diff(c *gin.Context) {
 			lineType := LineUnchanged
 			if strings.HasPrefix(line, "+") {
 				lineType = LineDeletion
+				deletions++
 			} else if strings.HasPrefix(line, "-") {
 				lineType = LineAddition
+				insertions++
 			}
 
 			latestPart.Lines = append(latestPart.Lines, &Line{
@@ -174,7 +178,9 @@ func Diff(c *gin.Context) {
 		"description": strings.Replace(commit.Message(), commit.Summary()+"\n", "", 1),
 		"time":        humanize.Time(commit.Author.When),
 
-		"sha":  sha,
-		"diff": diffs,
+		"sha":        sha,
+		"diff":       diffs,
+		"deletions":  deletions,
+		"insertions": insertions,
 	})
 }

@@ -2,14 +2,27 @@
 
 div.diff {
   margin: 0 300px;
+  width: calc(100% - 600px);
   flex-direction: column;
-  overflow: auto;
+
+  @media (min-width: 320px) and (max-width: 700px) {
+    margin: 0 @padding;
+    width: calc(100% - 2*@padding);
+  }
 
   div.commit:first-child {
     margin-bottom: @padding*4;
+
+    div.stats {
+      float: right;
+    }
+
+    a.insertions { color: @green; }
+    a.deletions { color: @red; }
   }
 
   div.commit:not(:first-child) {
+    overflow-x: auto;
     padding: 0;
 
     div.headline {

@@ -15,6 +15,12 @@
         <a class="time">{{.time}}</a>
       </div>
       <a>{{.name}}</a>
+
+      <div class="stats">
+        <a class="insertions">+{{.insertions}}</a>
+        <a class="deletions">-{{.deletions}}</a>
+      </div>
+
       {{if ne .description ""}}
         <div class="description">
           <span>{{.description}}</span>
