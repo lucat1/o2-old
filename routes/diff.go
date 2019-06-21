@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"html/template"
 	"path/filepath"
 	"strings"
@@ -106,8 +105,6 @@ func Diff(c *gin.Context) {
 		NotFound(c)
 		return
 	}
-
-	fmt.Println(out)
 
 	insertions, deletions := 0, 0
 	var diffs []*FileDiff
