@@ -2,7 +2,6 @@ package git
 
 import (
 	"compress/gzip"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -32,8 +31,6 @@ func ServiceRPC(c *gin.Context) {
 		c.Status(500)
 		return
 	}
-
-	fmt.Println(c.Request.URL.Path)
 
 	c.Header("Content-Type", "application/x-git-"+rpc+"-result")
 	c.Header("Connection", "Keep-Alive")
@@ -100,7 +97,6 @@ func ServiceRPC(c *gin.Context) {
 			return
 		}
 		if nRead != nWrite {
-			fmt.Printf("failed to write data: %d read, %d written\n", nRead, nWrite)
 			shared.GetLogger().Error(
 				"Written/Ridden data do not match in git rpc",
 				zap.Int("nRead", nRead),
