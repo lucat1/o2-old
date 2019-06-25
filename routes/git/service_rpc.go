@@ -33,6 +33,8 @@ func ServiceRPC(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(c.Request.URL.Path)
+
 	c.Header("Content-Type", "application/x-git-"+rpc+"-result")
 	c.Header("Connection", "Keep-Alive")
 	c.Header("Transfer-Encoding", "chunked")

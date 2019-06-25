@@ -26,8 +26,11 @@ type permission struct {
 }
 
 func (r *Repository) BeforeCreate(scope *gorm.Scope) error {
-	data := "[{\"For\":\"" + r.Owner + "\",\"Key\":\"repo:settings\"}]"
-	return scope.SetColumn("Granted", data)
+	permissions := []permission{
+		permission{For: r.Owner, Key: "repo:push"},
+		permission{For: r.Owner, Key: "repo:settings"},
+	}
+	return scope.SetColumn("Granted", EncodePermissions(&permissions, r))
 }
 
 func ParsePermissions(r *Repository) *[]permission {

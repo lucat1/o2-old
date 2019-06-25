@@ -37,12 +37,14 @@ func RawHasAccess(scopes []string) func(*gin.Context) {
 		if len(authHead) == 0 {
 			c.Header("WWW-Authenticate", "Basic realm=\".\"")
 			c.Status(http.StatusUnauthorized)
+			c.Abort()
 			return
 		}
 
 		username, password, ok := c.Request.BasicAuth()
 		if !ok {
 			c.Status(http.StatusBadRequest)
+			c.Abort()
 			return
 		}
 
