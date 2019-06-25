@@ -79,13 +79,13 @@ func main() {
 	router.POST(
 		"/:user/:repo/git-upload-pack",
 		routes.ExistsRepo(false),
-		routes.RawHasAccess([]string{"repo:pill"}),
+		routes.RawHasAccess([]string{"repo:pull"}),
 		git.ServiceRPC,
 	)
 	router.POST(
 		"/:user/:repo/git-upload-pack/*path",
 		routes.ExistsRepo(false),
-		routes.RawHasAccess([]string{"repo:pill"}),
+		routes.RawHasAccess([]string{"repo:pull"}),
 		git.ServiceRPC,
 	)
 	router.POST(
