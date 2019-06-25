@@ -61,25 +61,101 @@ func main() {
 	router.GET("/:user/:repo/log/:page", routes.ExistsRepo(true), routes.Log)
 	router.GET("/:user/:repo/diff/:sha", routes.ExistsRepo(true), routes.Diff)
 	router.GET("/:user/:repo/settings", routes.ExistsRepo(true), routes.HasAccess([]string{"repo:settings"}), routes.Settings)
+	router.POST("/:user/:repo/settings", routes.ExistsRepo(true), routes.HasAccess([]string{"repo:settings"}), routes.Settings)
 
 	// Git smart http protocol
-	router.GET("/:user/:repo/info/refs", routes.ExistsRepo(false), git.GetInfoRefs)
-	router.GET("/:user/:repo/info/refs/*path", routes.ExistsRepo(false), git.GetInfoRefs)
-	router.POST("/:user/:repo/git-upload-pack", routes.ExistsRepo(false), git.ServiceRPC)
-	router.POST("/:user/:repo/git-upload-pack/*path", routes.ExistsRepo(false), git.ServiceRPC)
-	router.POST("/:user/:repo/git-receive-pack", routes.ExistsRepo(false), git.ServiceRPC)
-	router.POST("/:user/:repo/git-receive-pack/*path", routes.ExistsRepo(false), git.ServiceRPC)
-	router.GET("/:user/:repo/HEAD", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/HEAD/*path", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/objects/info/alternates", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/objects/info/alternates/*path", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/objects/info/http-alternates", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/objects/info/http-alternates/*path", routes.ExistsRepo(false), git.GetTextFile)
-	router.GET("/:user/:repo/objects/info/packs", routes.ExistsRepo(false), git.GetInfoPacks)
-	router.GET("/:user/:repo/objects/info/packs/*path", routes.ExistsRepo(false), git.GetInfoPacks)
+	router.GET(
+		"/:user/:repo/info/refs",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:view"}),
+		git.GetInfoRefs,
+	)
+	router.GET(
+		"/:user/:repo/info/refs/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:view"}),
+		git.GetInfoRefs,
+	)
+	router.POST(
+		"/:user/:repo/git-upload-pack",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pill"}),
+		git.ServiceRPC,
+	)
+	router.POST(
+		"/:user/:repo/git-upload-pack/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pill"}),
+		git.ServiceRPC,
+	)
+	router.POST(
+		"/:user/:repo/git-receive-pack",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:push"}),
+		git.ServiceRPC,
+	)
+	router.POST(
+		"/:user/:repo/git-receive-pack/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:push"}),
+		git.ServiceRPC,
+	)
+	router.GET(
+		"/:user/:repo/HEAD",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/HEAD/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/alternates",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/alternates/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/http-alternates",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/http-alternates/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetTextFile,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/packs",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetInfoPacks,
+	)
+	router.GET(
+		"/:user/:repo/objects/info/packs/*path",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetInfoPacks,
+	)
 	//router.GET("/:user/:repo/objects/info/*path", routes.ExistsRepo(false), git.GetTextFile)
 	//router.GET("/:user/:repo/objects/*path", routes.ExistsRepo(false), git.GetLooseObject)
-	router.GET("/:user/:repo/objects/pack/pack-:pack", routes.ExistsRepo(false), git.GetPackOrIdx)
+	router.GET(
+		"/:user/:repo/objects/pack/pack-:pack",
+		routes.ExistsRepo(false),
+		routes.RawHasAccess([]string{"repo:pull"}),
+		git.GetPackOrIdx,
+	)
 
 	router.NoRoute(routes.NotFound)
 	router.NoMethod(routes.NotFound)

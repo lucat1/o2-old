@@ -11,10 +11,19 @@ import (
 	"go.uber.org/zap"
 )
 
+var cwd string
+
 func getRepositoryPath(user, repo string) string {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
+	var wd string
+	if cwd == "" {
+		_wd, err := os.Getwd()
+		if err != nil {
+			shared.GetLogger().Fatal("Could not get cwd via syscall", zap.Error(err))
+		}
+		cwd = _wd
+		wd = _wd
+	} else {
+		wd = cwd
 	}
 
 	return path.Join(wd, "repos", user, repo+".git")

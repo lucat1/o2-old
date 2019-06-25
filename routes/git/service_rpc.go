@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/o2/routes"
 	"github.com/lucat1/o2/shared"
 	"go.uber.org/zap"
 )
@@ -46,41 +45,6 @@ func ServiceRPC(c *gin.Context) {
 		if config.DefaultEnv != "" {
 			env = append(env, config.DefaultEnv)
 		}*/
-
-	// usr, passwd
-	authHead := c.GetHeader("Authorization")
-	if len(authHead) == 0 {
-		c.Header("WWW-Authenticate", "Basic realm=\".\"")
-		c.Status(http.StatusUnauthorized)
-		return
-	}
-
-	username, password, ok := c.Request.BasicAuth()
-	if !ok {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-
-	shared.GetLogger().Info(
-		"New login",
-		zap.String("username", username),
-		zap.String("password", password),
-	)
-
-	user := routes.FindUser(username)
-	if user == nil {
-		// User with the provided username doesnt exist
-		c.Status(http.StatusUnauthorized)
-		return
-	}
-	// If the user exists lets check for the password
-	ok = shared.CheckPassword(user.Password, password)
-	if !ok {
-		c.Status(http.StatusUnauthorized)
-		return
-	}
-
-	shared.GetLogger().Info("Git '"+rpc+"' rpc with authenticated user", zap.String("user", user.Username))
 
 	args := []string{rpc, "--stateless-rpc", dir}
 	cmd := exec.Command("/usr/bin/git", args...)
@@ -118,7 +82,8 @@ func ServiceRPC(c *gin.Context) {
 
 	flusher, ok := c.Writer.(http.Flusher)
 	if !ok {
-		panic("expected http.ResponseWriter to be an http.Flusher")
+		shared.GetLogger().Error("expected http.ResponseWriter to be an http.Flusher")
+		return
 	}
 
 	p := make([]byte, 1024)
@@ -129,12 +94,17 @@ func ServiceRPC(c *gin.Context) {
 		}
 		nWrite, err := c.Writer.Write(p[:nRead])
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			shared.GetLogger().Error("Could not write to response in git rpc", zap.Error(err))
+			return
 		}
 		if nRead != nWrite {
 			fmt.Printf("failed to write data: %d read, %d written\n", nRead, nWrite)
-			os.Exit(1)
+			shared.GetLogger().Error(
+				"Written/Ridden data do not match in git rpc",
+				zap.Int("nRead", nRead),
+				zap.Int("nWrite", nWrite),
+			)
+			return
 		}
 		flusher.Flush()
 	}

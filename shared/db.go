@@ -3,6 +3,7 @@ package shared
 import (
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
+
 	// SQLite driver
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
