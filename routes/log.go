@@ -73,7 +73,7 @@ func Log(c *gin.Context) {
 	c.HTML(http.StatusOK, "log.tmpl", gin.H{
 		"username":    username,
 		"repo":        dbRepo.Name,
-		"isownrepo":   isOwnRepo(c, dbRepo.Owner),
+		"isownrepo":   shared.HasAccess(c, []string{"repo:settings"}, username, dbRepo.Name),
 		"selectedlog": true,
 		"commits":     commits,
 		"user":        c.Keys["user"],

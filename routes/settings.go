@@ -28,7 +28,7 @@ func Settings(c *gin.Context) {
 			"repo":             _repo.Name,
 			"mainbranch":       _repo.MainBranch,
 			"selectedsettings": true,
-			"isownrepo":        isOwnRepo(c, _repo.Owner),
+			"isownrepo":        shared.HasAccess(c, []string{"repo:settings"}, username, _repo.Name),
 		})
 		return
 	} else {

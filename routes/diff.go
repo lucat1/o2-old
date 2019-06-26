@@ -177,7 +177,7 @@ func Diff(c *gin.Context) {
 		"user":         c.Keys["user"],
 		"selecteddiff": true,
 		"repo":         _repo.Name,
-		"isownrepo":    isOwnRepo(c, _repo.Owner),
+		"isownrepo":    shared.HasAccess(c, []string{"repo:settings"}, username, _repo.Name),
 
 		"id":          sha,
 		"shortid":     sha[:8],

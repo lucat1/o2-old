@@ -71,11 +71,3 @@ func findRepo(c *gin.Context, username string, reponame string) (*shared.Reposit
 
 	return _repo, repo
 }
-
-func isOwnRepo(c *gin.Context, owner string) bool {
-	if c.Keys["user"] == nil {
-		return false
-	}
-
-	return c.Keys["user"].(*shared.User).Username == owner
-}

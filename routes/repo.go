@@ -58,7 +58,7 @@ func Repo(c *gin.Context) {
 		"user":         c.Keys["user"],
 		"repo":         _repo.Name,
 		"selectedrepo": true,
-		"isownrepo":    isOwnRepo(c, _repo.Owner),
+		"isownrepo":    shared.HasAccess(c, []string{"repo:settings"}, username, _repo.Name),
 		"markdown":     template.HTML(md),
 	})
 }
