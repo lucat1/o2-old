@@ -72,5 +72,8 @@ func Settings(c *gin.Context) {
 			return
 		}
 
+		NotFound(c)
+		c.Abort()
+		return
 	}
 }
