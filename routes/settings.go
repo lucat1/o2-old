@@ -2,6 +2,7 @@ package routes
 
 import (
 	"os"
+	"path"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lucat1/o2/shared"
@@ -31,19 +32,32 @@ func Settings(c *gin.Context) {
 		})
 		return
 	} else {
+		// Method POST
 		owner := c.Param("user")
 		reponame := c.Param("repo")
-		// Method POST
-		if newName := c.PostForm("general-rename"); newName != "" && newName != reponame {
+
+		newName := c.PostForm("general-rename")
+		newOwner := c.PostForm("general-ownership")
+		// Either it is rename or ownership change
+		if (newName != "" && newName != reponame) || (newOwner != "" && newOwner != owner) {
+			if newOwner == "" {
+				newOwner = owner
+			}
+			if newName == "" {
+				newName = reponame
+			}
+
 			shared.GetLogger().Info(
-				"Renaming repository",
-				zap.String("owner", owner),
-				zap.String("from", reponame),
-				zap.String("to", newName),
+				"Renaming repository/Changing ownership",
+				zap.String("oldOwner", owner),
+				zap.String("newOwner", newOwner),
+				zap.String("oldName", reponame),
+				zap.String("newName", newName),
 			)
 
 			dbRepo := findRepoInDatabase(owner, reponame)
-			if err := shared.GetDatabase().Model(dbRepo).Update("name", newName).Error; err != nil {
+			err := shared.GetDatabase().Model(dbRepo).Update("name", newName).Update("owner", newOwner).Error
+			if err != nil {
 				shared.GetLogger().Warn(
 					"Could not rename repository",
 					zap.String("owner", owner),
@@ -55,12 +69,15 @@ func Settings(c *gin.Context) {
 				c.Abort()
 				return
 			}
-			if err := os.Rename(getRepositoryPath(owner, reponame), getRepositoryPath(owner, newName)); err != nil {
+
+			os.MkdirAll(path.Join(cwd, "repos", newOwner), 0777)
+			if err := os.Rename(getRepositoryPath(owner, reponame), getRepositoryPath(newOwner, newName)); err != nil {
 				shared.GetLogger().Warn(
 					"Could not rename in the filesystem",
-					zap.String("owner", owner),
-					zap.String("from", reponame),
-					zap.String("to", newName),
+					zap.String("oldOwner", owner),
+					zap.String("newOwner", newOwner),
+					zap.String("oldName", reponame),
+					zap.String("newName", newName),
 					zap.Error(err),
 				)
 				c.Status(500)
@@ -68,7 +85,7 @@ func Settings(c *gin.Context) {
 				return
 			}
 
-			c.Redirect(302, "/"+owner+"/"+newName)
+			c.Redirect(302, "/"+newOwner+"/"+newName)
 			return
 		}
 
