@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lucat1/o2/shared"
 )
 
 // Logout removes the session token from the request
@@ -18,20 +17,16 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	shared.GetLogger().Info("here")
-
 	if c.Keys["user"] == nil {
 		c.Redirect(301, "/login")
 		c.Abort()
 		return
 	}
 
-	shared.GetLogger().Info("Updating cookie")
-
 	// Remove the cookie
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:    "token",
-		Value:   "",
+		Value:   "invalid",
 		Expires: time.Now().Add(time.Hour * 24),
 		Path:    "/",
 	})

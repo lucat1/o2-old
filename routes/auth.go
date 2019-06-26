@@ -17,7 +17,7 @@ func AuthMiddleware(c *gin.Context) {
 		c.Keys = make(map[string]interface{})
 	}
 
-	if err == nil {
+	if err == nil && cookie != "invalid" {
 		claims := &shared.Claims{}
 		tkn, err := jwt.ParseWithClaims(cookie, claims, func(token *jwt.Token) (interface{}, error) {
 			return shared.JWT, nil
