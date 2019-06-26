@@ -38,7 +38,7 @@
         {{range $part := $file.Parts}}
           {{range $i, $line := $part.Lines}}
             <div class="{{$line.Class}}{{if eq $i 0}} header{{end}}">
-              <pre>{{if eq $i 0}}@@{{$part.Header}} @@ {{end}}{{$line.Render}}</pre>
+              <pre>{{$line.OldNumber}} {{$line.NewNumber}}{{if eq $i 0}}@@ {{$part.Header}} @@ {{end}}{{$line.Render}}</pre>
             </div>
           {{end}}
         {{end}}

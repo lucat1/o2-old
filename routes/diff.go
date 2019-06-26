@@ -3,6 +3,7 @@ package routes
 import (
 	"html/template"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"code.gitea.io/git"
@@ -29,14 +30,19 @@ type FileDiff struct {
 
 type Part struct {
 	Header string
-	Lines  []*Line
+	Start  int
+
+	LatestAdded   int
+	LatestRemoved int
+	Lines         []*Line
 }
 
 type Line struct {
 	raw string
 
-	Number int
-	Type   LineType
+	OldNumber int
+	NewNumber int
+	Type      LineType
 }
 
 func (l *Line) Render() template.HTML {
@@ -136,13 +142,23 @@ func Diff(c *gin.Context) {
 				finalLine = line[index+3 : len(line)]
 			}
 
-			header := line[2 : index-1]
+			header := line[3 : index-1]
+			parts := strings.Split(header, " ")
+			start, _ := strconv.Atoi(strings.Split(parts[0][1:], ",")[0])
+
+			// Calculate the starting line
+
+			line := start + i - latestDiffBeginning - 5
 			part := Part{
-				Header: header,
+				Header:        header,
+				Start:         start,
+				LatestAdded:   line,
+				LatestRemoved: line,
 				Lines: append(lines, &Line{
-					raw:    finalLine,
-					Number: i,
-					Type:   LineUnchanged,
+					raw:       finalLine,
+					OldNumber: line,
+					NewNumber: line,
+					Type:      LineUnchanged,
 				}),
 			}
 
@@ -158,15 +174,22 @@ func Diff(c *gin.Context) {
 				if strings.HasPrefix(line, "-") {
 					lineType = LineDeletion
 					deletions++
+					latestPart.LatestRemoved++
 				} else if strings.HasPrefix(line, "+") {
 					lineType = LineAddition
 					insertions++
+					latestPart.LatestAdded++
+				} else {
+					// Increment both linecounts if nothing changes
+					latestPart.LatestAdded++
+					latestPart.LatestRemoved++
 				}
 
 				latestPart.Lines = append(latestPart.Lines, &Line{
-					raw:    line,
-					Number: i,
-					Type:   lineType,
+					raw:       line,
+					OldNumber: latestPart.LatestAdded,
+					NewNumber: latestPart.LatestAdded,
+					Type:      lineType,
 				})
 			}
 		}
