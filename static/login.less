@@ -18,4 +18,20 @@ div.login {
       margin-top: @padding * 1.5;
     }
   }
+
+  &.register {
+    form div {
+      display: flex;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        margin: 0 @padding;
+
+        textarea {
+          resize: none;
+        }
+      }
+    }
+  }
 }
