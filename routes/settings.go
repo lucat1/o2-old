@@ -58,13 +58,7 @@ func Settings(c *gin.Context) {
 			dbRepo := findRepoInDatabase(owner, reponame)
 			err := shared.GetDatabase().Model(dbRepo).Update("name", newName).Update("owner", newOwner).Error
 			if err != nil {
-				shared.GetLogger().Warn(
-					"Could not rename repository",
-					zap.String("owner", owner),
-					zap.String("from", reponame),
-					zap.String("to", newName),
-					zap.Error(err),
-				)
+				shared.GetLogger().Warn("Could not rename repository", zap.Error(err))
 				c.Status(500)
 				c.Abort()
 				return
@@ -72,20 +66,40 @@ func Settings(c *gin.Context) {
 
 			os.MkdirAll(path.Join(cwd, "repos", newOwner), 0777)
 			if err := os.Rename(getRepositoryPath(owner, reponame), getRepositoryPath(newOwner, newName)); err != nil {
-				shared.GetLogger().Warn(
-					"Could not rename in the filesystem",
-					zap.String("oldOwner", owner),
-					zap.String("newOwner", newOwner),
-					zap.String("oldName", reponame),
-					zap.String("newName", newName),
-					zap.Error(err),
-				)
+				shared.GetLogger().Warn("Could not rename in the filesystem", zap.Error(err))
 				c.Status(500)
 				c.Abort()
 				return
 			}
 
 			c.Redirect(302, "/"+newOwner+"/"+newName)
+			return
+		}
+
+		// Delete the repo
+		if c.PostForm("general-delete") == "true" {
+			shared.GetLogger().Info(
+				"Deleting repository",
+				zap.String("owner", owner),
+				zap.String("repo", reponame),
+			)
+
+			dbRepo := findRepoInDatabase(owner, reponame)
+			if err := shared.GetDatabase().Delete(dbRepo).Error; err != nil {
+				shared.GetLogger().Warn("Could not reomve repository from database", zap.Error(err))
+				c.Status(500)
+				c.Abort()
+				return
+			}
+
+			if err := os.RemoveAll(getRepositoryPath(owner, reponame)); err != nil {
+				shared.GetLogger().Warn("Could not reomve repository from filesystem", zap.Error(err))
+				c.Status(500)
+				c.Abort()
+				return
+			}
+
+			c.Redirect(301, "/"+owner)
 			return
 		}
 
