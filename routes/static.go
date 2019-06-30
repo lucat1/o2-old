@@ -19,7 +19,7 @@ func Static(assets map[string]*assets.File) func(*gin.Context) {
 			url := c.Request.URL.Path
 			if strings.HasPrefix(url, "/static/") || url == "/favicon.ico" {
 				if url == "/favicon.ico" {
-					url = "/shared/favicon.ico"
+					url = "/static/favicon.ico"
 				}
 
 				http.ServeFile(c.Writer, c.Request, "."+url)
@@ -32,7 +32,7 @@ func Static(assets map[string]*assets.File) func(*gin.Context) {
 		url := c.Request.URL.Path
 		if strings.HasPrefix(url, "/static/") || url == "/favicon.ico" {
 			if url == "/favicon.ico" {
-				url = "/shared/favicon.ico"
+				url = "/static/favicon.ico"
 			}
 
 			if assets[url] != nil {
