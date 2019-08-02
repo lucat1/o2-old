@@ -160,7 +160,8 @@ func main() {
 	router.NoRoute(routes.NotFound)
 	router.NoMethod(routes.NotFound)
 
-	shared.GetLogger().Fatal("Error while serving HTTP", zap.Error(router.Run(":80")))
+	shared.GetLogger().Info("Opening web server on port :8080")
+	shared.GetLogger().Fatal("Error while serving HTTP", zap.Error(router.Run(":8080")))
 }
 
 func loadTemplate() (*template.Template, error) {

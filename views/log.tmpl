@@ -37,7 +37,9 @@
       <button {{if eq .prevpage 0}}disabled{{end}}>
         <a {{if ne .prevpage 0}}href="/{{$.username}}/{{$.repo}}/log/{{.prevpage}}"{{end}}>Prev page</a>
       </button>
-      <button><a href="/{{$.username}}/{{$.repo}}/log/{{.nextpage}}">Next page</a></button>
+      <button>
+        <a href="/{{$.username}}/{{$.repo}}/log/{{.nextpage}}">Next page</a>
+      </button>
     </div>
   </div>
 </div>

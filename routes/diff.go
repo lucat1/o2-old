@@ -90,11 +90,17 @@ func Diff(c *gin.Context) {
 	firstID := commit.ID.String()
 	commits, err := commit.CommitsBeforeLimit(2)
 	if err != nil || commits.Front() == nil {
-		shared.GetLogger().Error("Error while getting previos commit in diff", zap.String("id", firstID), zap.Error(err))
+		shared.GetLogger().Warn("Error while getting previos commit in diff", zap.String("id", firstID), zap.Error(err))
 		NotFound(c)
 		return
 	}
-	secondID := commits.Front().Next().Value.(*git.Commit).ID.String()
+	second := commits.Front().Next()
+	if second == nil {
+		shared.GetLogger().Warn("Diffing first commit is not yet supported", zap.String("id", firstID))
+		NotFound(c)
+		return
+	}
+	secondID := second.Value.(*git.Commit).ID.String()
 
 	statuses, err := git.GetCommitFileStatus(repoPath, firstID)
 	if err != nil {
